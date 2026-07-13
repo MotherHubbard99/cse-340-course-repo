@@ -1,6 +1,11 @@
 import express from 'express';
 import { fileURLToPath } from 'url';
 import path from 'path';
+import { testConnection } from './src/models/db.js';
+import { getAllOrganizations } from './src/models/organizations.js';
+import { getAllProjects } from './src/models/projects.js';
+import { getAllCategories } from './src/models/categories.js';
+
 
 /*put these in the .env file for development only/
 const NODE_ENV = 'production';
@@ -38,26 +43,46 @@ app.get('/', async(req, res) => {
   res.render('home', { title });
 });
 
-app.get('/organizations', (req, res) => {
+app.get('/organizations', async(req, res) => {
   //res.sendFile(path.join(__dirname, 'src/views/organizations.html'));
   //changed to .ejs file to use EJS templating engine
+  const organizations = await getAllOrganizations();
+  console.log('Organizations:', organizations); // Log the organizations to the console for debugging
+  
   const title = 'Our Partner Organizations';
-  res.render('organizations', { title });
+  res.render('organizations', { title, organizations });
 });
 
-app.get('/projects', (req, res) => {
+app.get('/projects', async(req, res) => {
     //res.sendFile(path.join(__dirname, 'src/views/projects.html'));
-    //changed to .ejs file to use EJS templating engine
-    const title = 'Service Projects';
-    res.render('projects', { title });
+  //changed to .ejs file to use EJS templating engine
+  const projects = await getAllProjects();
+  const organizations = await getAllOrganizations(); // Fetch organizations to map organization_id to name
+  const organizationMap = organizations.reduce((map, org) => {
+    map[org.organization_id] = org.name;
+    return map;
+  }, {});
+  console.log('Projects:', projects); // Log the projects to the console for debugging
+
+  const title = 'Service Projects';
+  res.render('projects', { title, projects, organizationMap });
 });
 
-app.get('/categories', (req, res) => {
-    const title = 'Service Categories';
-    res.render('categories', { title });
+app.get('/categories', async (req, res) => {
+  console.log("HIT /categories route");
+  const categories = await getAllCategories();
+  console.log("Categories from DB:", categories);
+
+  const title = 'Service Categories';
+  res.render('categories', { title, categories });
 });
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
+  try {
+    await testConnection();
     console.log(`Server is running at http://127.0.0.1:${PORT}`);
-    console.log(`Environment: ${NODE_ENV}`);    
+    console.log(`Environment: ${NODE_ENV}`);
+  } catch (error) {
+    console.error('Error connecting to database:', error);
+  }
 });

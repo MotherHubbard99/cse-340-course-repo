@@ -1,15 +1,19 @@
+<%= JSON.stringify(categories) %>
+
+
 <%- include('partials/header') %>
 
     <main>
         <h1>
             <%= title %>
         </h1>
+       <p>Service categories:</p>
        <ul>
-            <li>Environmental</li>
-            <li>Educational</li>
-            <li>Community Service</li>
-            <li>Health and Wellness</li>
+            <% categories.forEach(category => { %>
+                <li><%= category.name %></li>
+            <% }); %>
         </ul>
     </main>
 
     <%- include('partials/footer') %>
+    

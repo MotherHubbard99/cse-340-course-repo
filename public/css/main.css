@@ -32,6 +32,7 @@ nav ul {
     gap: 0.5rem;
 }
 
+/*Make the entire link area clickable, not just the text*/
 nav ul li a {
     display: block;
     padding: 1rem 1.2rem;
@@ -41,6 +42,7 @@ nav ul li a {
     font-size: 0.95rem;
     letter-spacing: 0.4px;
     transition: color 0.2s ease, border-bottom 0.2s ease;
+    /*prevents the link from shifting when the border appears on hover*/
     border-bottom: 3px solid transparent;
 }
 
