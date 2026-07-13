@@ -46,35 +46,50 @@ app.get('/', async(req, res) => {
 app.get('/organizations', async(req, res) => {
   //res.sendFile(path.join(__dirname, 'src/views/organizations.html'));
   //changed to .ejs file to use EJS templating engine
-  const organizations = await getAllOrganizations();
-  console.log('Organizations:', organizations); // Log the organizations to the console for debugging
-  
-  const title = 'Our Partner Organizations';
-  res.render('organizations', { title, organizations });
+  try{
+      const organizations = await getAllOrganizations();
+      console.log('Organizations:', organizations); // Log the organizations to the console for debugging
+      
+      const title = 'Our Partner Organizations';
+      res.render('organizations', { title, organizations });
+} catch (error) {
+    console.error('Error fetching organizations:', error);
+    res.status(500).send('Error fetching organizations');
+}
 });
 
 app.get('/projects', async(req, res) => {
     //res.sendFile(path.join(__dirname, 'src/views/projects.html'));
   //changed to .ejs file to use EJS templating engine
-  const projects = await getAllProjects();
-  const organizations = await getAllOrganizations(); // Fetch organizations to map organization_id to name
-  const organizationMap = organizations.reduce((map, org) => {
-    map[org.organization_id] = org.name;
-    return map;
-  }, {});
-  console.log('Projects:', projects); // Log the projects to the console for debugging
+  try {
+    const projects = await getAllProjects();
+    const organizations = await getAllOrganizations(); // Fetch organizations to map organization_id to name
+    const organizationMap = organizations.reduce((map, org) => {
+      map[org.organization_id] = org.name;
+      return map;
+    }, {});
+    console.log('Projects:', projects); // Log the projects to the console for debugging
 
-  const title = 'Service Projects';
-  res.render('projects', { title, projects, organizationMap });
+    const title = 'Service Projects';
+    res.render('projects', { title, projects, organizationMap });
+  } catch (error) {
+    console.error('Error fetching projects:', error);
+    res.status(500).send('Error fetching projects');
+  }  
 });
 
 app.get('/categories', async (req, res) => {
-  console.log("HIT /categories route");
-  const categories = await getAllCategories();
-  console.log("Categories from DB:", categories);
+  try{
+    console.log("HIT /categories route");
+    const categories = await getAllCategories();
+    console.log("Categories from DB:", categories);
 
-  const title = 'Service Categories';
-  res.render('categories', { title, categories });
+    const title = 'Service Categories';
+    res.render('categories', { title, categories });
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    res.status(500).send('Error fetching categories');
+  }
 });
 
 app.listen(PORT, async () => {
