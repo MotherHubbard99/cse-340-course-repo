@@ -2,9 +2,7 @@ import express from 'express';
 import { fileURLToPath } from 'url';
 import path from 'path';
 import { testConnection } from './src/models/db.js';
-import { getAllOrganizations } from './src/models/organizations.js';
-import { getAllProjects } from './src/models/projects.js';
-import { getAllCategories } from './src/models/categories.js';
+import router from './src/routes.js';
 
 
 /*put these in the .env file for development only/
@@ -49,70 +47,15 @@ app.use((req, res, next) => {
 
 
 /*route handler aka ROUTES */
-app.get('/', async (req, res) => {
-  //res.sendFile(path.join(__dirname, 'src/views/home.html'));
-  //changed to .ejs file to use EJS templating engine
-  const title = 'Home';
-  res.render('home', { title });
-});
-
-app.get('/organizations', async (req, res) => {
-  //res.sendFile(path.join(__dirname, 'src/views/organizations.html'));
-  //changed to .ejs file to use EJS templating engine
-  try {
-    const organizations = await getAllOrganizations();
-    console.log('Organizations:', organizations); // Log the organizations to the console for debugging
-
-    const title = 'Our Partner Organizations';
-    res.render('organizations', { title, organizations });
-  } catch (error) {
-    console.error('Error fetching organizations:', error);
-    res.status(500).send('Error fetching organizations');
-  }
-});
-
-app.get('/projects', async (req, res) => {
-  //res.sendFile(path.join(__dirname, 'src/views/projects.html'));
-  //changed to .ejs file to use EJS templating engine
-  try {
-    const projects = await getAllProjects();
-    const organizations = await getAllOrganizations(); // Fetch organizations to map organization_id to name
-    const organizationMap = organizations.reduce((map, org) => {
-      map[org.organization_id] = org.name;
-      return map;
-    }, {});
-    console.log('Projects:', projects); // Log the projects to the console for debugging
-
-    const title = 'Service Projects';
-    res.render('projects', { title, projects, organizationMap });
-  } catch (error) {
-    console.error('Error fetching projects:', error);
-    res.status(500).send('Error fetching projects');
-  }
-});
-
-app.get('/categories', async (req, res) => {
-  try {
-    console.log("HIT /categories route");
-    const categories = await getAllCategories();
-    console.log("Categories from DB:", categories);
-
-    const title = 'Service Categories';
-    res.render('categories', { title, categories });
-  } catch (error) {
-    console.error('Error fetching categories:', error);
-    res.status(500).send('Error fetching categories');
-  }
-});
+//app.get('/', async (req, res) => {
+//app.get('/organizations', async (req, res) => {
+//app.get('/projects', async (req, res) => {
+//app.get('/categories', async (req, res) => {
+//replaced with the following line to use the router defined in src/routes.js
+app.use('/', router);  //use the router defined in src/routes.js for all routes starting with '/'
 
 /*ERROR HANDLING MIDDLEWARE*/
 
-// Test route for 500 errors: http://127.0.0.1:3000/test-error
-app.get('/test-error', (req, res, next) => {
-    const err = new Error('This is a test error');
-    err.status = 500;
-    next(err);
-});
 
 // Catch-all route for 404 errors: This only runs if there is an error not caught by the Express error handler
 //http://127.0.0.1:3000/sldkfjlksj   (to test 404 error handling)
