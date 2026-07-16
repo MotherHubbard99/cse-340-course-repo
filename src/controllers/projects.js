@@ -1,4 +1,4 @@
-import { getAllProjects } from '../models/projects.js';
+import { getAllProjects, getProjectsByOrganizationID } from '../models/projects.js';
 
 const showProjectsPage = async (req, res) => {
     const projects = await getAllProjects();
@@ -7,4 +7,10 @@ const showProjectsPage = async (req, res) => {
     res.render('projects', { title, projects });
 };  
 
-export { showProjectsPage };
+const showProjectDetailsPage = async (req, res) => {
+    const projectId = req.params.id;
+    const project = await getProjectById(projectId);
+    res.render('project', { project });
+};
+
+export { showProjectsPage, showProjectDetailsPage};
