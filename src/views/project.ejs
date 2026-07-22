@@ -24,10 +24,10 @@
 
         <h2>Categories</h2>
         <ul>
-            <% categories.forEach(category=> { %>
+            <% categories.forEach(function(category) { %>
                 <li>
                     <a href="/category/<%= category.category_id %>">
-                        <%= category.category_name %>
+                        <%= category.name %>
                     </a>
                 </li>
                 <% }) %>
